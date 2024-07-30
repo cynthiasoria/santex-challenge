@@ -1,4 +1,6 @@
-import { Box, CardContent, List, ListItem, Typography } from '@mui/material';
+import { useMutation } from '@apollo/client';
+import { CardContent, List, ListItem, Typography } from '@mui/material';
+import { ADD_ITEM_TO_ORDER } from '../graphql/mutations';
 import { useOrder } from '../hooks/OrderContext';
 import {
   SXBuyButton,
@@ -35,9 +37,25 @@ export const Product = ({
   featuredAsset,
   variants,
 }: IProduct) => {
-  const { addToOrder } = useOrder();
+  const { setLocalStorageValue } = useOrder();
+
+  const [addItemToOrder] = useMutation(ADD_ITEM_TO_ORDER, {
+    onCompleted: (data) => {
+      setLocalStorageValue(data.addItemToOrder.subTotal);
+    },
+    onError: (error) => {
+      console.error('Error adding item to order:', error);
+    },
+  });
+
+  const addItem = async (productVariantId: string) => {
+    await addItemToOrder({
+      variables: { productVariantId: productVariantId, quantity: 1 },
+    });
+  };
+
   return (
-    <SXCard key={id}>
+    <SXCard key={`product-${id}`}>
       <SXImage image={featuredAsset.preview} title={name} />
       <CardContent>
         <SXTitle variant="h5">{name}</SXTitle>
@@ -50,7 +68,7 @@ export const Product = ({
                 <Typography variant="body2">{variant.name}</Typography>
                 <SXPrice variant="body1">${variant.price}</SXPrice>
                 <SXBuyButton
-                  onClick={() => addToOrder(variant.id, variant.price)}
+                  onClick={() => addItem(variant.id)}
                   variant="contained"
                 >
                   Buy

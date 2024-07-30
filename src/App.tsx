@@ -6,7 +6,7 @@ function App() {
   return (
     <OrderProvider>
       <Header />
-      <ProductList></ProductList>
+      <ProductList />
     </OrderProvider>
   );
 }

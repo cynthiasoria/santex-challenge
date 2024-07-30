@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function useStateWithStorage(
   key: string,
@@ -6,12 +6,24 @@ export default function useStateWithStorage(
 ) {
   const [value, setValue] = useState(() => {
     const storedValue = localStorage.getItem(key);
-    return storedValue !== null ? JSON.parse(storedValue) : defaultValue;
+    if (storedValue !== null) {
+      try {
+        return JSON.parse(storedValue);
+      } catch (error) {
+        console.error(`Error parsing localStorage key "${key}":`, error);
+        localStorage.removeItem(key);
+      }
+    }
+    return defaultValue;
   });
 
-  useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(value));
-  }, [key, value]);
+  const setLocalStorageValue = useCallback(
+    (newValue) => {
+      setValue(newValue);
+      localStorage.setItem(key, JSON.stringify(newValue));
+    },
+    [key]
+  );
 
-  return [value, setValue];
+  return [value, setLocalStorageValue];
 }

@@ -1,33 +1,21 @@
-import { useMutation } from '@apollo/client';
 import { createContext, useContext } from 'react';
-import { ADD_ITEM_TO_ORDER } from '../graphql/mutations';
 import useStateWithStorage from '../hooks/useStateWithStorage';
 
 interface OrderContextType {
   subtotal: number;
-  addToOrder: (productId: string, price: number) => Promise<void>;
+  setLocalStorageValue: (price: number) => void;
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
 export const OrderProvider = ({ children }: any) => {
-  const [subtotal, setSubtotal] = useStateWithStorage('orderSubtotal', 0);
-  const [addItemToOrder] = useMutation(ADD_ITEM_TO_ORDER);
+  const [subtotal, setLocalStorageValue] = useStateWithStorage(
+    'orderSubtotal',
+    0
+  );
 
-  const addToOrder = async (productVariantId: string, price: number) => {
-    try {
-      const { data } = await addItemToOrder({
-        variables: { productVariantId: productVariantId, quantity: 1 },
-      });
-      if (data) {
-        setSubtotal((previus: number) => previus + price);
-      }
-    } catch (error) {
-      console.error('Error adding item to order:', error);
-    }
-  };
   return (
-    <OrderContext.Provider value={{ subtotal, addToOrder }}>
+    <OrderContext.Provider value={{ subtotal, setLocalStorageValue }}>
       {children}
     </OrderContext.Provider>
   );

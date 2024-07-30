@@ -27,7 +27,3 @@ export const SXCart = styled(Box)({
   alignItems: 'center',
 });
 
-// export const SXIcon = styled(ShoppingCartIcon)`
-//   margin-right: 10px,
-//   color: #333,
-// `,
