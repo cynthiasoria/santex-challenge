@@ -5,9 +5,9 @@ import { Box } from '@mui/material';
 export const SXHeaderContainer = styled('header')({
   display: 'flex',
   position: 'fixed',
-  width: '98%',
+  width: '100vw',
   zIndex: 3,
-  height: '5vh',
+  height: '10vh',
   top: '0',
   bottom: '0',
   justifyContent: 'space-between',
